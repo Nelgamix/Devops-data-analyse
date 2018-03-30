@@ -4,52 +4,67 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Series<T> {
+class Series<T> {
     private String name;
     private List<T> data;
 
-    public Series() {
-        this.data = new ArrayList<>();
+    Series() {
+        this("", null);
     }
 
-    public Series(T[] data) {
+    Series(T[] data) {
         this("", data);
     }
 
-    public Series(String name) {
+    Series(String name) {
         this(name, null);
     }
 
-    public Series(String name, T[] data) {
+    Series(String name, T[] data) {
         this.name = name;
         this.data = data != null ? new ArrayList<>(Arrays.asList(data)) : new ArrayList<>();
     }
 
-    public int getSize() {
+    int getSize() {
         return this.data.size();
     }
 
-    public T get(int i) {
-        if (i < data.size()) {
+    T get(int i) {
+        if (i >= 0 && i < data.size()) {
             return this.data.get(i);
         }
 
         return null;
     }
 
-    public void add(T d) {
+    void add(T d) {
         this.data.add(d);
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public List<T> getData() {
+    List<T> getData() {
         return data;
+    }
+
+    T calculateMin() {
+        if (this.getSize() == 0) {
+            return null;
+        }
+
+        T min = this.getData().get(0);
+        for (T d : this.getData()) {
+            /*if (min < d) {
+                min = d;
+            }*/
+        }
+
+        return min;
     }
 }

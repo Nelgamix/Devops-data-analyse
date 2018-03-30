@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Dataframe {
+class Dataframe {
     private List<Series> series;
 
-    public Dataframe() {
+    Dataframe() {
         this.series = new ArrayList<>();
     }
 
-    public Dataframe(String filename) {
+    Dataframe(String filename) {
         this.series = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
             String[] line;
@@ -37,16 +37,16 @@ public class Dataframe {
         }
     }
 
-    public Dataframe(Series ...datacolumns) {
+    Dataframe(Series ...datacolumns) {
         this.series = new ArrayList<>();
         this.series.addAll(Arrays.asList(datacolumns));
     }
 
-    public void addSeries(Series s) {
+    void addSeries(Series s) {
         this.series.add(s);
     }
 
-    public void printAll() {
+    void printAll() {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -59,7 +59,7 @@ public class Dataframe {
         System.out.print(builder.toString());
     }
 
-    public void printFirstLines(int n) {
+    void printFirstLines(int n) {
         if (n >= this.getSize() || n <= 0) {
             return;
         }
@@ -76,7 +76,7 @@ public class Dataframe {
         System.out.print(builder.toString());
     }
 
-    public void printLastLines(int n) {
+    void printLastLines(int n) {
         int t = this.getSize();
         if (n >= t || n <= 0) {
             return;
@@ -84,7 +84,7 @@ public class Dataframe {
 
         StringBuilder builder = new StringBuilder();
 
-        for (int i = n; i < t - n; i++) {
+        for (int i = t - n; i < t; i++) {
             for (Series d : this.series) {
                 builder.append(String.format("%8s", String.valueOf(d.get(i))));
             }
@@ -94,7 +94,7 @@ public class Dataframe {
         System.out.print(builder.toString());
     }
 
-    public Dataframe selectLines(int min, int max) {
+    Dataframe selectLines(int min, int max) {
         if (min < 0 || min >= max || max > this.getSize()) {
             return null;
         }
@@ -116,7 +116,7 @@ public class Dataframe {
         return df;
     }
 
-    public Dataframe selectSeries(String[] names) {
+    Dataframe selectSeries(String[] names) {
         if (names.length < 1) {
             return null;
         }
@@ -138,11 +138,11 @@ public class Dataframe {
         return df;
     }
 
-    public List<Series> getSeries() {
+    List<Series> getSeries() {
         return series;
     }
 
-    public int getSize() {
+    int getSize() {
         int t = 0;
         for (Series s : this.getSeries()) {
             if (t < s.getSize()) {
