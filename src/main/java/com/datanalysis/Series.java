@@ -59,12 +59,46 @@ class Series<T> {
         }
 
         T min = this.getData().get(0);
-        for (T d : this.getData()) {
-            /*if (min < d) {
-                min = d;
-            }*/
+        if (min instanceof Integer) {
+            for (T d : this.getData()) {
+                if ((Integer)min > (Integer)d) {
+                    min = d;
+                }
+            }
         }
 
         return min;
+    }
+
+    T calculateMax() {
+        if (this.getSize() == 0) {
+            return null;
+        }
+
+        T max = this.getData().get(0);
+        if (max instanceof Integer) {
+            for (T d : this.getData()) {
+                if ((Integer)max < (Integer)d) {
+                    max = d;
+                }
+            }
+        }
+
+        return max;
+    }
+
+    Double calculateAvg() {
+        if (this.getSize() == 0) {
+            return null;
+        }
+
+        Double avg = 0d;
+        if (this.getData().get(0) instanceof Integer) {
+            for (T d : this.getData()) {
+                avg += (Integer)d;
+            }
+        }
+
+        return avg / this.getSize();
     }
 }

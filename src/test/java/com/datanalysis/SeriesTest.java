@@ -121,4 +121,22 @@ class SeriesTest {
         Integer i = s.calculateMin();
         assertEquals((Integer)1, i);
     }
+
+    @Test
+    void testCalculateMax() {
+        Integer[] sData = new Integer[]{4, 2, 6, 1, 10, 8};
+        Series<Integer> s = new Series<>(sData);
+
+        Integer i = s.calculateMax();
+        assertEquals((Integer)10, i);
+    }
+
+    @Test
+    void testCalculateAvg() {
+        Integer[] sData = new Integer[]{4, 2, 6, 0, 8, 10};
+        Series<Integer> s = new Series<>(sData);
+
+        Double i = s.calculateAvg();
+        assertEquals((Double)5.0, i);
+    }
 }
