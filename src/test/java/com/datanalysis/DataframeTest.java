@@ -1,19 +1,17 @@
 package com.datanalysis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 class DataframeTest {
-    private Series<Integer> getSeries(boolean inversed, int length, String name) {
+    private Series getSeries(boolean inversed, int length, String name) {
         Integer[] column = new Integer[length];
         for (int i = 0; i < length; i++) {
             column[i] = inversed ? length - i : i;
         }
 
-        return new Series<>(name, column);
+        return SeriesFactory.createSeries(name, column);
     }
 
     private Dataframe getBasicDataframe(int length) {
@@ -118,5 +116,16 @@ class DataframeTest {
         Dataframe df2 = df.selectLines(1, 6);
 
         assertNull(df2);
+    }
+
+    @Test
+    void testMixedDataframe() {
+        Series s1 = SeriesFactory.createSeries(new Integer[]{2, 4, 6});
+        Series s2 = SeriesFactory.createSeries(new String[]{"AZ", "PM", "GA"});
+        Dataframe df = new Dataframe(s1, s2);
+
+        assertNotNull(df);
+        assertEquals(3, df.getSize());
+        df.printAll();
     }
 }
