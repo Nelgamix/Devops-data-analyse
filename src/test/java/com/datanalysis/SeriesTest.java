@@ -2,6 +2,8 @@ package com.datanalysis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.datanalysis.series.Series;
+import com.datanalysis.series.SeriesFactory;
 import org.junit.jupiter.api.Test;
 
 class SeriesTest {
@@ -10,6 +12,7 @@ class SeriesTest {
         Series s = SeriesFactory.createSeries(Integer.class);
 
         assertNotNull(s);
+        assertEquals(Integer.class, s.getDataType());
         assertEquals("", s.getName());
         assertEquals(0, s.getData().size());
     }
@@ -19,6 +22,7 @@ class SeriesTest {
         Series s = SeriesFactory.createSeries("Colonne 1", Integer.class);
 
         assertNotNull(s);
+        assertEquals(Integer.class, s.getDataType());
         assertEquals("Colonne 1", s.getName());
         assertEquals(0, s.getData().size());
     }
@@ -29,6 +33,7 @@ class SeriesTest {
         Series s = SeriesFactory.createSeries(sData);
 
         assertNotNull(s);
+        assertEquals(Integer.class, s.getDataType());
         assertEquals("", s.getName());
         assertEquals(6, s.getData().size());
 
@@ -44,6 +49,7 @@ class SeriesTest {
         Series s = SeriesFactory.createSeries("Col 1", sData);
 
         assertNotNull(s);
+        assertEquals(Integer.class, s.getDataType());
         assertEquals("Col 1", s.getName());
         assertEquals(6, s.getData().size());
 
@@ -141,11 +147,12 @@ class SeriesTest {
     }
 
     @Test
-    void testValidConstructString() {
+    void testConstructString() {
         String[] sData = new String[]{"A", "DS", "AZ", "ZS", "Z"};
         Series s = SeriesFactory.createSeries("String data", sData);
 
         assertNotNull(s);
+        assertEquals(String.class, s.getDataType());
         assertEquals(5, s.getSize());
         assertEquals("String data", s.getName());
         for (int i = 0; i < sData.length; i++) {
@@ -154,5 +161,59 @@ class SeriesTest {
         assertEquals("A", s.calculateMin());
         assertEquals("ZS", s.calculateMax());
         assertNull(s.calculateAvg());
+
+        Series s2 = SeriesFactory.createSeries("Strings", String.class);
+        Series s3 = SeriesFactory.createSeries(String.class);
+        Series s4 = SeriesFactory.createSeries(sData);
+
+        assertNotNull(s2);
+        assertNotNull(s3);
+        assertNotNull(s4);
+    }
+
+    @Test
+    void testConstructDouble() {
+        Double[] sData = new Double[]{2.2, 5.9, 3.1, 1.22, 9.3, 6.3};
+        Series s = SeriesFactory.createSeries("Doubles", sData);
+
+        assertNotNull(s);
+        assertEquals(Double.class, s.getDataType());
+        assertEquals(6, s.getSize());
+        assertEquals("Doubles", s.getName());
+        for (int i = 0; i < sData.length; i++) {
+            assertEquals(sData[i], s.getData().get(i));
+        }
+        assertEquals(1.22, s.calculateMin());
+        assertEquals(9.3, s.calculateMax());
+        assertEquals((Double)((2.2+5.9+3.1+1.22+9.3+6.3)/6), s.calculateAvg());
+
+        Series s2 = SeriesFactory.createSeries("Doubles", Double.class);
+        Series s3 = SeriesFactory.createSeries(Double.class);
+        Series s4 = SeriesFactory.createSeries(sData);
+
+        assertNotNull(s2);
+        assertNotNull(s3);
+        assertNotNull(s4);
+    }
+
+    @Test
+    void testInvalidConstructs() {
+        Series s = SeriesFactory.createSeries(Character.class);
+        Series s2 = SeriesFactory.createSeries("Chars", Character.class);
+
+        assertNull(s);
+        assertNull(s2);
+    }
+
+    @Test
+    void testInvalidCalculate() {
+        Series si = SeriesFactory.createSeries(Integer.class);
+        Series sd = SeriesFactory.createSeries(Double.class);
+
+        assertNotNull(si);
+        assertNull(si.calculateAvg());
+
+        assertNotNull(sd);
+        assertNull(sd.calculateAvg());
     }
 }

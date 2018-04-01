@@ -1,5 +1,7 @@
 package com.datanalysis;
 
+import com.datanalysis.series.Series;
+import com.datanalysis.series.SeriesFactory;
 import com.opencsv.CSVReader;
 
 import java.io.FileReader;
@@ -8,21 +10,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class Dataframe {
+class DataFrame {
+    private static final Integer PRINT_DEFAULT = 5;
     private List<Series> series;
 
-    Dataframe() {
+    DataFrame() {
         this.series = new ArrayList<>();
     }
 
-    Dataframe(String filename) {
+    DataFrame(String filename) {
         this.series = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
             String[] line;
             if ((line = reader.readNext()) != null) {
-                for (int i = 0; i < line.length; i++) {
-                    Series<String> s = new Series<>();
-                    s.add(line[i]);
+                for (String aLine : line) {
+                    Series s = SeriesFactory.createSeries(String.class);
+                    s.add(aLine);
                     this.addSeries(s);
                 }
 
@@ -37,7 +40,7 @@ class Dataframe {
         }
     }
 
-    Dataframe(Series ...datacolumns) {
+    DataFrame(Series ...datacolumns) {
         this.series = new ArrayList<>();
         this.series.addAll(Arrays.asList(datacolumns));
     }
@@ -59,14 +62,23 @@ class Dataframe {
         System.out.print(builder.toString());
     }
 
+    void printFirstLines() {
+        this.printFirstLines(DataFrame.PRINT_DEFAULT);
+    }
+
+    void printLastLines() {
+        this.printLastLines(DataFrame.PRINT_DEFAULT);
+    }
+
     void printFirstLines(int n) {
-        if (n >= this.getSize() || n <= 0) {
+        int t = this.getSize();
+        if (n <= 0) {
             return;
         }
 
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n && i < t; i++) {
             for (Series d : this.series) {
                 builder.append(String.format("%8s", String.valueOf(d.get(i))));
             }
@@ -78,13 +90,13 @@ class Dataframe {
 
     void printLastLines(int n) {
         int t = this.getSize();
-        if (n >= t || n <= 0) {
+        if (n <= 0) {
             return;
         }
 
         StringBuilder builder = new StringBuilder();
 
-        for (int i = t - n; i < t; i++) {
+        for (int i = Math.max(0, t - n); i < t; i++) {
             for (Series d : this.series) {
                 builder.append(String.format("%8s", String.valueOf(d.get(i))));
             }
@@ -94,16 +106,16 @@ class Dataframe {
         System.out.print(builder.toString());
     }
 
-    Dataframe selectLines(int min, int max) {
+    DataFrame selectLines(int min, int max) {
         if (min < 0 || min >= max || max > this.getSize()) {
             return null;
         }
 
-        Dataframe df = new Dataframe();
+        DataFrame df = new DataFrame();
 
-        // Add series to new Dataframe
+        // Add series to new DataFrame
         for (int i = 0; i < this.getSeries().size(); i++) {
-            df.addSeries(new Series());
+            df.addSeries(SeriesFactory.createSeries(this.getSeries().get(i).getDataType()));
         }
 
         // Copy data
@@ -116,17 +128,17 @@ class Dataframe {
         return df;
     }
 
-    Dataframe selectSeries(String[] names) {
+    DataFrame selectSeries(String[] names) {
         if (names.length < 1) {
             return null;
         }
 
-        Dataframe df = new Dataframe();
+        DataFrame df = new DataFrame();
 
         this.getSeries().forEach(s -> {
             for (String name : names) {
                 if (s.getName().equals(name)) {
-                    Series ns = new Series(name);
+                    Series ns = SeriesFactory.createSeries(name, s.getDataType());
                     s.getData().forEach(ns::add);
                     df.addSeries(ns);
 
@@ -135,7 +147,7 @@ class Dataframe {
             }
         });
 
-        return df;
+        return df.getSeries().size() > 0 ? df : null;
     }
 
     List<Series> getSeries() {

@@ -2,6 +2,9 @@ package com.datanalysis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.datanalysis.series.Series;
+import com.datanalysis.series.SeriesFactory;
+
 import org.junit.jupiter.api.Test;
 
 class DataframeTest {
@@ -14,11 +17,11 @@ class DataframeTest {
         return SeriesFactory.createSeries(name, column);
     }
 
-    private Dataframe getBasicDataframe(int length) {
+    private DataFrame getBasicDataframe(int length) {
         return this.getBasicDataframe(length, new String[]{"Col 1", "Col 2"});
     }
 
-    private Dataframe getBasicDataframe(int length, String[] seriesNames) {
+    private DataFrame getBasicDataframe(int length, String[] seriesNames) {
         boolean inv = false;
         Series[] ser = new Series[seriesNames.length];
         for (int i = 0; i < seriesNames.length; i++) {
@@ -26,12 +29,12 @@ class DataframeTest {
             inv = !inv;
         }
 
-        return new Dataframe(ser);
+        return new DataFrame(ser);
     }
 
     @Test
     void testEmptyConstruct() {
-        Dataframe df = new Dataframe();
+        DataFrame df = new DataFrame();
 
         assertNotNull(df);
         assertEquals(0, df.getSize());
@@ -40,7 +43,7 @@ class DataframeTest {
 
     @Test
     void testConstructSeries() {
-        Dataframe df = this.getBasicDataframe(10);
+        DataFrame df = this.getBasicDataframe(10);
 
         assertNotNull(df);
         assertEquals(10, df.getSize());
@@ -48,7 +51,7 @@ class DataframeTest {
 
     @Test
     void testConstructCSV() {
-        Dataframe df = new Dataframe("test.csv");
+        DataFrame df = new DataFrame("test.csv");
 
         assertNotNull(df);
         assertEquals(6, df.getSize());
@@ -56,29 +59,41 @@ class DataframeTest {
 
     @Test
     void testPrintAll() {
-        Dataframe df = this.getBasicDataframe(4);
+        DataFrame df = this.getBasicDataframe(4);
 
         df.printAll();
     }
 
     @Test
     void testPrintFirstLines() {
-        Dataframe df = this.getBasicDataframe(4);
+        DataFrame df = this.getBasicDataframe(6);
 
+        df.printFirstLines();
         df.printFirstLines(2);
     }
 
     @Test
     void testPrintLastLines() {
-        Dataframe df = this.getBasicDataframe(4);
+        DataFrame df = this.getBasicDataframe(6);
 
+        df.printLastLines();
         df.printLastLines(2);
     }
 
     @Test
+    void testInvalidPrint() {
+        DataFrame df = this.getBasicDataframe(3);
+
+        df.printFirstLines(9);
+        df.printLastLines(9);
+        df.printFirstLines(-2);
+        df.printLastLines(-1);
+    }
+
+    @Test
     void testValidSelectLines() {
-        Dataframe df = this.getBasicDataframe(5);
-        Dataframe df2 = df.selectLines(2, 4);
+        DataFrame df = this.getBasicDataframe(5);
+        DataFrame df2 = df.selectLines(2, 4);
 
         assertNotNull(df2);
         assertEquals(2, df2.getSize());
@@ -94,8 +109,8 @@ class DataframeTest {
     void testValidSelectSeries() {
         String[] seriesNames = new String[]{"Place", "Index", "Restaurants"};
 
-        Dataframe df = this.getBasicDataframe(5, seriesNames);
-        Dataframe df2 = df.selectSeries(new String[]{"Index", "Restaurants"});
+        DataFrame df = this.getBasicDataframe(5, seriesNames);
+        DataFrame df2 = df.selectSeries(new String[]{"Index", "Restaurants"});
 
         assertNotNull(df2);
         assertEquals(5, df2.getSize());
@@ -112,17 +127,27 @@ class DataframeTest {
 
     @Test
     void testInvalidSelectLines() {
-        Dataframe df = this.getBasicDataframe(5);
-        Dataframe df2 = df.selectLines(1, 6);
+        DataFrame df = this.getBasicDataframe(5);
+        DataFrame df2 = df.selectLines(1, 6);
 
         assertNull(df2);
+    }
+
+    @Test
+    void testInvalidSelectSeries() {
+        DataFrame df = this.getBasicDataframe(5);
+        DataFrame df2 = df.selectSeries(new String[]{});
+        DataFrame df3 = df.selectSeries(new String[]{"Named"});
+
+        assertNull(df2);
+        assertNull(df3);
     }
 
     @Test
     void testMixedDataframe() {
         Series s1 = SeriesFactory.createSeries(new Integer[]{2, 4, 6});
         Series s2 = SeriesFactory.createSeries(new String[]{"AZ", "PM", "GA"});
-        Dataframe df = new Dataframe(s1, s2);
+        DataFrame df = new DataFrame(s1, s2);
 
         assertNotNull(df);
         assertEquals(3, df.getSize());
