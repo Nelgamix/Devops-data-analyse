@@ -3,7 +3,7 @@
 # Progression
 ## Construction d'un DataFrame
 * A partir de structures de données simples: OK
-* A partir d'un fichier CSV:                 OK (manque la reco des types)
+* A partir d'un fichier CSV:                 OK
 
 ## Affichage d'un DataFrame
 * Affichage complet: OK
@@ -24,6 +24,12 @@
 * Maven
 * JUnit 5
 * Travis CI
+* Librarie: CSVReader (http://opencsv.sourceforge.net)
+
+# Lancement
+* Pour lancer les tests: `mvn test`
+* Pour compiler: `mvn compile`
+* Pour clean: `mvn clean`
 
 # Code
 Création de colonnes (`Series`):
@@ -75,7 +81,7 @@ Méthodes sur les `Series`:
 * `calculateMax()`: Calcule le maximum dans les données
 * `calculateAvg()`: Calcule la moyenne des données
 
-Méthodes sur les `DataFrames`:
+Méthodes sur les `DataFrame`:
 * `addSeries(Series s)`: Ajoute une nouvelle colonne
 * `getSize()`: Renvoie la taille du DataFrame (le nombre d'éléments max de toutes les colonnes)
 * `printAll()`: Affiche la totalité du DataFrame

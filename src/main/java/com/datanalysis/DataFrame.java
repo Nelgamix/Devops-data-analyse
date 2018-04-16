@@ -19,19 +19,21 @@ class DataFrame {
     }
 
     DataFrame(String filename) {
+        Class cs;
         this.series = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
             String[] line;
             if ((line = reader.readNext()) != null) {
                 for (String aLine : line) {
-                    Series s = SeriesFactory.createSeries(String.class);
-                    s.add(aLine);
+                    cs = Utils.getTypeOf(aLine);
+                    Series s = SeriesFactory.createSeries(cs);
+                    convertAndAdd(aLine, s, cs);
                     this.addSeries(s);
                 }
 
                 while ((line = reader.readNext()) != null) {
                     for (int i = 0; i < this.series.size(); i++) {
-                        this.series.get(i).add(line[i]);
+                        convertAndAdd(line[i], this.series.get(i), this.series.get(i).getDataType());
                     }
                 }
             }
@@ -43,6 +45,16 @@ class DataFrame {
     DataFrame(Series ...datacolumns) {
         this.series = new ArrayList<>();
         this.series.addAll(Arrays.asList(datacolumns));
+    }
+
+    private void convertAndAdd(String data, Series s, Class c) {
+        if (c == Integer.class) {
+            s.add(Integer.parseInt(data));
+        } else if (c == Double.class) {
+            s.add(Double.parseDouble(data));
+        } else {
+            s.add(data);
+        }
     }
 
     void addSeries(Series s) {
